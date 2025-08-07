@@ -1,0 +1,47 @@
+@if (loading()){
+<p>Loading movie details...</p>
+} @else { @if (movie(); as selectedMovie) {
+<div class="movie-details">
+  <img
+    [ngSrc]="selectedMovie.posterUrl"
+    alt="{{ selectedMovie.title }} Poster"
+    width="300"
+    height="450"
+  />
+  <div>
+    <h2>{{ selectedMovie.title }}</h2>
+    <p><strong>Description: </strong>{{ selectedMovie.description }}</p>
+    <p><strong>Date: </strong>{{ selectedMovie.releaseDate | date }}</p>
+    <p><strong>Genre: </strong> {{ selectedMovie.genre.join(", ") }}</p>
+    <p><strong>Duration: </strong> {{ selectedMovie.duration }} minutes</p>
+    <p><strong>Rating: </strong> {{ selectedMovie.rating }}</p>
+
+    @if (selectedMovie.showtimes && selectedMovie.showtimes.length > 0; as
+    showtimes) {
+    <h3>Showtimes:</h3>
+    <div class="showtime-buttons">
+      @for (showtime of selectedMovie.showtimes; track showtime) {
+      <button
+        (click)="onSelectShowtime(showtime)"
+        [class.selected]="showtime === selectedShowtime()"
+      >
+        {{ showtime }}
+      </button>
+      }
+    </div>
+    } @else {
+    <p>No showtimes available.</p>
+    }
+
+    <!-- Display selected showtime and proceed button-->
+    @if (selectedShowtime(); as showtime) {
+    <h4>Selected Showtime: {{ showtime }}</h4>
+    <button [disabled]="!selectedShowtime()" (click)="proceedToSeatSelection()">
+      Proceed to Seat Selection
+    </button>
+    }
+  </div>
+</div>
+} @else {
+<p>Movie not found.</p>
+} }

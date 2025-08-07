@@ -1,0 +1,20 @@
+.booking-confirmation-container {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .booking-details {
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 8px;
+    display: inline-block; /* Center the block */
+    text-align: left;
+  }
+  
+  .confirmation-message {
+    margin-top: 20px;
+    font-size: 1.1em;
+    color: #28a745; /* Green color for success */
+  }
+  

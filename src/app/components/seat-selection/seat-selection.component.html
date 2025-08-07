@@ -1,0 +1,28 @@
+<div class="seat-selection-container">
+  <h3>Select your Seats</h3>
+  <div class="screen">Screen</div>
+  <div class="seating-chart">
+    @for (row of seatChart(); track $index) {
+    <div class="seat-row">
+      @for (seat of row; track seat.id) {
+      <button class="seat" [class]="seat.status" (click)="onSelectSeat(seat)">
+        {{ seat.id }}
+      </button>
+      }
+    </div>
+    }
+  </div>
+
+  @if (selectedSeats().length > 0; as seats) {
+  <div class="selected-seats-summary">
+    <h4>Selected Seats:</h4>
+    <p>{{ selectedSeatIdsString() }}</p>
+    <button
+      [disabled]="selectedSeats().length === 0"
+      (click)="proceedToBooking()"
+    >
+      Book Tickets ({{ selectedSeats().length }})
+    </button>
+  </div>
+  }
+</div>

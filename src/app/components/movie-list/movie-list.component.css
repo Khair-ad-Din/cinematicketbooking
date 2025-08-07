@@ -1,0 +1,17 @@
+.movie-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* adds space between movie items */
+}
+
+.movie-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    width: 180px;
+}
+
+.movie-item img {
+    max-width: 100%;
+    height: auto;
+}

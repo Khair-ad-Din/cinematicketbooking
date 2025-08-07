@@ -1,0 +1,36 @@
+/* Add styles for the movie details container */
+.movie-details {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.movie-details {
+  border-radius: 8px;
+}
+
+.movie-details > div {
+  flex-grow: 1;
+}
+
+/* Style for showtime buttons */
+.showtime-buttons button {
+  margin-right: 10px;
+  padding: 8px 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  transition: background-color 0.3s ease;
+}
+
+.showtime-buttons button:hover {
+  background-color: #e0e0e0;
+}
+
+/* Style for the selected showtime button */
+.showtime-buttons button.selected {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}

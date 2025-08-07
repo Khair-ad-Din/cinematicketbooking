@@ -1,0 +1,29 @@
+<div class="booking-confirmation-container">
+  <h3>Booking confirmation</h3>
+
+  @if(bookingStatus() === 'pending') {
+  <p>Processing your booking...</p>
+  } @else if(bookingStatus() === 'confirmed') { @if(movie(); as selectedMovie) {
+  <div class="booking-details">
+    <h4>Movie: {{ selectedMovie.title }}</h4>
+    <p><strong>Showtime:</strong>{{ showtime() }}</p>
+    <p><strong>Seats:</strong>{{ selectedSeatIds().join(", ") }}</p>
+    <!-- TODO: Calculate and display total price -->
+  </div>
+  <div class="confirmation-message">
+    <p>Your booking is confirmed!</p>
+    <p>Thank you for your purchase.</p>
+    <!-- TODO: Add a button to go back to the home page -->
+  </div>
+
+  <button [routerLink]="['/']">Back to Home</button>
+
+  } @else {
+  <p>Booking confirmed, but movie details could not be loaded.</p>
+  } } @else if (bookingStatus() === 'failed') {
+  <div class="error-message">
+    <p>Booking failed. Please try again.</p>
+    <!--TODO: Add a button to try booking again-->
+  </div>
+  }
+</div>

@@ -1,0 +1,25 @@
+<h3>Now Showing</h3>
+
+@if (loading()){
+<p>Loading movies...</p>
+} @else {
+<div class="movie-list">
+  @for (movie of movies(); track movie.id) {
+  <a [routerLink]="['/movies', movie.id]">
+    <div class="movie-card">
+      <img
+        [ngSrc]="movie.posterUrl"
+        alt="{{ movie.title }} Poster"
+        width="150"
+        height="225"
+      />
+      <h4>{{ movie.title }}</h4>
+      <p>{{ movie.description }}</p>
+    </div>
+  </a>
+
+  } @empty {
+  <p>No movies available.</p>
+  }
+</div>
+}
