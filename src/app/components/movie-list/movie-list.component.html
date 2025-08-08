@@ -4,7 +4,36 @@
 <p>Loading movies...</p>
 } @else {
 <div class="movie-list">
-  @for (movie of movies(); track movie.id) {
+  <div class="search-bar">
+    <div class="text-filter">
+      <input
+        type="text"
+        placeholder="Search for movies..."
+        (input)="onSearchTermChange($event)"
+      />
+    </div>
+    <div class="genre-filter">
+      @for (genre of uniqueGenres(); track $index) {
+      <input
+        type="checkbox"
+        [value]="genre"
+        (change)="onGenreCheckboxChange(genre, $event.target.checked)"
+      /><label>{{ genre }}</label>
+      }
+    </div>
+    <div class="rating-filter">
+      <label>Rating:</label>
+      <input
+        type="range"
+        min="0"
+        max="10"
+        value="0"
+        (input)="onRatingChange($event)"
+      /><span> {{ minRating() }}</span>
+    </div>
+  </div>
+
+  @for (movie of filteredMovies(); track movie.id) {
   <a [routerLink]="['/movies', movie.id]">
     <div class="movie-card">
       <img
@@ -19,6 +48,7 @@
   </a>
 
   } @empty {
+  <br />
   <p>No movies available.</p>
   }
 </div>
