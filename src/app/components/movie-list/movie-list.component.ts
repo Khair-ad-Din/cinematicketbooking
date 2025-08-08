@@ -8,7 +8,6 @@ import {
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MovieService } from '../../services/movie.service';
 import { RouterLink } from '@angular/router';
-import { generate } from 'rxjs';
 
 @Component({
   selector: 'app-movie-list',

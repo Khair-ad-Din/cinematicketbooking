@@ -7,8 +7,6 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterOutlet]
+  imports: [CommonModule, RouterOutlet],
 })
-export class App {
-  title = 'cinema-booking-system';
-}
+export class App {}
