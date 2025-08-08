@@ -1,17 +1,43 @@
 .movie-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px; /* adds space between movie items */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.movie-list a {
+  text-decoration: none;
+  color: inherit;
 }
 
 .movie-item {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
-    width: 180px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  width: 180px;
 }
 
-.movie-item img {
-    max-width: 100%;
-    height: auto;
+.search-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.movie-card {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  align-items: start;
+}
+
+.movie-card {
+  border-radius: 8px;
+}
+
+.movie-card > div {
+  flex-grow: 1;
+}
+
+.movie-card img {
+  width: 300px;
+  height: auto;
 }

@@ -42,8 +42,14 @@
         width="150"
         height="225"
       />
-      <h4>{{ movie.title }}</h4>
-      <p>{{ movie.description }}</p>
+      <div>
+        <h4>{{ movie.title }}</h4>
+        <p><strong>Description: </strong>{{ movie.description }}</p>
+        <p><strong>Date: </strong>{{ movie.releaseDate | date }}</p>
+        <p><strong>Genre: </strong> {{ movie.genre.join(", ") }}</p>
+        <p><strong>Duration: </strong> {{ movie.duration }} minutes</p>
+        <p><strong>Rating: </strong> {{ movie.rating }}</p>
+      </div>
     </div>
   </a>
 

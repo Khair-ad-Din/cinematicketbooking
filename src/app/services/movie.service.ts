@@ -47,7 +47,7 @@ export class MovieService {
       id: 4,
       title: 'Pulp Fiction',
       description:
-        'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.',
+        'Las vidas de dos sicarios de la mafia, un boxeador, un gánster y su esposa y un par de bandidos de un restaurante se entrelazan en cuatro historias de violencia y redención.',
       posterUrl: 'assets/posters/pulp_fiction.jpg',
       releaseDate: new Date(2025, 7, 11),
       rating: 8.9,
