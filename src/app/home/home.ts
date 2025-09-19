@@ -5,8 +5,7 @@ import { MovieListComponent } from '../components/movie-list/movie-list.componen
 @Component({
   selector: 'app-home',
   template: `
-    <h2>Welcome to the Cinema Booking System</h2>
-    <p>Browse movies and book your tickets!</p>
+    <h2>Movie Recommender</h2>
     <app-movie-list></app-movie-list>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -32,22 +32,22 @@ export class MovieDetailsComponent {
     return this.movieService.getMovieById(id);
   });
 
-  selectedShowtime = signal<string | null>(null);
+  // selectedShowtime = signal<string | null>(null);
 
-  onSelectShowtime(showtime: string) {
-    this.selectedShowtime.set(showtime);
-    console.log('Selected showtime: ', showtime);
-    // TODO: Implement logic to proceed to seat selection in Phase 3
-  }
+  // onSelectShowtime(showtime: string) {
+  //   this.selectedShowtime.set(showtime);
+  //   console.log('Selected showtime: ', showtime);
+  //   // TODO: Implement logic to proceed to seat selection in Phase 3
+  // }
 
-  proceedToSeatSelection() {
-    const movieId = this.movieId();
-    const showtime = this.selectedShowtime();
+  // proceedToSeatSelection() {
+  //   const movieId = this.movieId();
+  //   const showtime = this.selectedShowtime();
 
-    if (movieId && showtime) {
-      this.router.navigate(['/movies', movieId, 'showtime', showtime]);
-    } else {
-      console.error('Cannot proceed: Movie ID or showtime not selected.');
-    }
-  }
+  //   if (movieId && showtime) {
+  //     this.router.navigate(['/movies', movieId, 'showtime', showtime]);
+  //   } else {
+  //     console.error('Cannot proceed: Movie ID or showtime not selected.');
+  //   }
+  // }
 }

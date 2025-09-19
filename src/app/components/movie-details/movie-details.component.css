@@ -1,19 +1,17 @@
-/* Add styles for the movie details container */
+/* Mobile */
 .movie-details {
   display: flex;
-  gap: 20px;
-  padding: 20px;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
 }
 
-.movie-details {
-  border-radius: 8px;
+.movie-details img {
+  width: 80vw;
+  height: auto;
 }
 
-.movie-details > div {
-  flex-grow: 1;
-}
-
-/* Style for showtime buttons */
+/* Style for showtime buttons
 .showtime-buttons button {
   margin-right: 10px;
   padding: 8px 15px;
@@ -22,15 +20,28 @@
   cursor: pointer;
   background-color: #f0f0f0;
   transition: background-color 0.3s ease;
-}
+} */
 
-.showtime-buttons button:hover {
+/* .showtime-buttons button:hover {
   background-color: #e0e0e0;
 }
 
-/* Style for the selected showtime button */
+Style for the selected showtime button
 .showtime-buttons button.selected {
   background-color: #007bff;
   color: white;
   border-color: #007bff;
+} */
+
+/* Desktop */
+@media (min-width: 48rem) {
+  .movie-details {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  }
+
+  .movie-details img {
+    width: 18.75rem;
+  }
 }

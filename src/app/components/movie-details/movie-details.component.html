@@ -16,7 +16,7 @@
     <p><strong>Duration: </strong> {{ selectedMovie.duration }} minutes</p>
     <p><strong>Rating: </strong> {{ selectedMovie.rating }}</p>
 
-    @if (selectedMovie.showtimes && selectedMovie.showtimes.length > 0; as
+    <!-- @if (selectedMovie.showtimes && selectedMovie.showtimes.length > 0; as
     showtimes) {
     <h3>Showtimes:</h3>
     <div class="showtime-buttons">
@@ -33,13 +33,12 @@
     <p>No showtimes available.</p>
     }
 
-    <!-- Display selected showtime and proceed button-->
     @if (selectedShowtime(); as showtime) {
     <h4>Selected Showtime: {{ showtime }}</h4>
     <button [disabled]="!selectedShowtime()" (click)="proceedToSeatSelection()">
       Proceed to Seat Selection
     </button>
-    }
+    } -->
   </div>
 </div>
 } @else {
