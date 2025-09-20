@@ -1,0 +1,7 @@
+@if (loading()) {
+<p>Loading movie...</p>
+} @else { @if (currentMovie(); as movie) {
+<app-movie-swipe-card [movie]="movie"></app-movie-swipe-card>
+} @else {
+<p>No movies available.</p>
+} }

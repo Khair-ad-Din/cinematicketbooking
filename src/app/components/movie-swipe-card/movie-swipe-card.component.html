@@ -1,0 +1,29 @@
+<div class="swipe-card">
+  <div class="card-container" [class.flipped]="isFlipped()">
+    <!-- Front Side -->
+    <div class="card-front">
+      <img
+        [ngSrc]="movie.posterUrl"
+        alt="{{ movie.title }}"
+        (click)="flipCard()"
+        width="300"
+        height="450"
+      />
+      <div class="card-info">
+        <h3>{{ movie.title }}</h3>
+        <p class="genres">{{ movie.genre.join(" • ") }}</p>
+        <p class="rating">★ {{ movie.rating }}/10</p>
+      </div>
+    </div>
+
+    <!-- Back Side -->
+    <div class="card-back">
+      <div class="description">
+        <h3>{{ movie.title }}</h3>
+        <p>{{ movie.description }}</p>
+        <button class="flip-back-btn" (click)="flipCard()">Back</button>
+        <button class="trailer-btn">Watch Trailer</button>
+      </div>
+    </div>
+  </div>
+</div>
