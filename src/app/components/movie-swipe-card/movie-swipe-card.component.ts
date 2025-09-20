@@ -1,7 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   Input,
+  Output,
   signal,
 } from '@angular/core';
 import { Movie } from '../../interfaces/movie';
@@ -17,6 +19,7 @@ import { RouterLink } from '@angular/router';
 })
 export class MovieSwipeCardComponent {
   @Input() movie!: Movie; //Receive movies from parent.
+  @Output() movieRated = new EventEmitter<string>();
 
   isFlipped = signal<boolean>(false);
 
@@ -93,17 +96,21 @@ export class MovieSwipeCardComponent {
 
   swipeUp() {
     console.log('Seen + Liked + Save');
+    this.movieRated.emit('seen-liked');
   }
 
   swipeDown() {
     console.log('Seen + Not Liked + Not Saved');
+    this.movieRated.emit('seen-disliked');
   }
 
   swipeLeft() {
     console.log('Not seen + Not Liked + Not Saved');
+    this.movieRated.emit('not-seen-disliked');
   }
 
   swipeRight() {
     console.log('Not seen + Liked + Saved');
+    this.movieRated.emit('not-seen-liked');
   }
 }

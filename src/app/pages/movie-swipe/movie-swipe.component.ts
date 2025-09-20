@@ -6,6 +6,7 @@ import {
   Component,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 
 @Component({
@@ -21,11 +22,29 @@ export class MovieSwipeComponent {
   movies = this.MovieService.movies;
   loading = this.MovieService.loading;
 
-  currentMovieIndex = 0;
+  currentMovieIndex = signal<number>(0);
   currentMovie = computed(() => {
     const movieList = this.movies();
-    return movieList[this.currentMovieIndex] || null;
+    const index = this.currentMovieIndex();
+    return movieList[index] || null;
   });
+
+  nextMovie() {
+    const MovieList = this.movies();
+    const currentIndex = this.currentMovieIndex();
+
+    if (currentIndex < MovieList.length - 1) {
+      this.currentMovieIndex.set(currentIndex + 1);
+    } else {
+      this.currentMovieIndex.set(0);
+    }
+  }
+
+  // Handle swipe completion from child
+  onMovieRated(rating: string) {
+    console.log('Movie rated: ', rating);
+    this.nextMovie();
+  }
 
   constructor() {
     this.MovieService.fetchMovies();
