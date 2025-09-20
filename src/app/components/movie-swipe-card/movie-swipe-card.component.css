@@ -48,6 +48,7 @@
 .card-front img {
   height: auto;
   border-radius: 0.5rem;
+  pointer-events: none;
 }
 
 .flip-back-btn, .trailer-btn {
@@ -61,5 +62,10 @@
 @media (min-width: 48rem) {
   .card-container {
     max-width: 22rem;
+    cursor: grab;
+  }
+
+  .card-container:active {
+    cursor: grabbing;
   }
 }

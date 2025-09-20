@@ -1,5 +1,15 @@
 <div class="swipe-card">
-  <div class="card-container" [class.flipped]="isFlipped()">
+  <div
+    class="card-container"
+    [class.flipped]="isFlipped()"
+    (touchstart)="onTouchStart($event)"
+    (touchend)="onTouchEnd($event)"
+    (mousedown)="onMouseDown($event)"
+    (mouseup)="onMouseUp($event)"
+    (mouseleave)="onMouseLeave($event)"
+    draggable="false"
+    [style.user-select]="'none'"
+  >
     <!-- Front Side -->
     <div class="card-front">
       <img
