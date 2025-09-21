@@ -76,6 +76,11 @@ export class UserPreferencesService {
     // Future: Fetch from backend API
   }
 
+  clearUserPreferences() {
+    localStorage.removeItem('user-preferences');
+    this.preferences.set(this.initializePreferences());
+  }
+
   // Future: Migration methods
   // migrateAnonymousToUser(userId: string) {...}
   // syncWithBackend() {...}

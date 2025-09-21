@@ -2,8 +2,11 @@
 <p>Loading movies...</p>
 } @else {
 <div class="movie-list">
-  <div class="swipe-navigation">
+  <div class="navigation">
     <button [routerLink]="['/swipe']" class="swipe-btn">Discover Movies</button>
+    <button [routerLink]="['/config-profile']" class="profile-config-btn">
+      Config
+    </button>
   </div>
   <div class="search-bar">
     <div class="text-filter">

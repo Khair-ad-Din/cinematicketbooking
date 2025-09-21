@@ -5,6 +5,7 @@ import { MovieDetailsComponent } from './components/movie-details/movie-details.
 import { SeatSelectionComponent } from './components/seat-selection/seat-selection.component';
 import { BookingConfirmationComponent } from './components/booking-confirmation/booking-confirmation.component';
 import { MovieSwipeComponent } from './pages/movie-swipe/movie-swipe.component';
+import { ConfigProfileComponent } from './pages/config-profile/config-profile.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -15,5 +16,6 @@ export const routes: Routes = [
   //   component: BookingConfirmationComponent,
   // },
   { path: 'swipe', component: MovieSwipeComponent },
+  { path: 'config-profile', component: ConfigProfileComponent },
   // Add more routes here later
 ];
