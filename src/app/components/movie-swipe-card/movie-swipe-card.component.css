@@ -48,7 +48,6 @@
 .card-front img {
   height: auto;
   border-radius: 0.5rem;
-  pointer-events: none;
 }
 
 .flip-back-btn, .trailer-btn {

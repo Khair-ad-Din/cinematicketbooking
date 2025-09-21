@@ -23,6 +23,8 @@ export class MovieSwipeCardComponent {
 
   isFlipped = signal<boolean>(false);
 
+  private wasSwipe = false;
+
   private startX = 0;
   private startY = 0;
   private endX = 0;
@@ -32,6 +34,17 @@ export class MovieSwipeCardComponent {
 
   flipCard() {
     this.isFlipped.update((current) => !current);
+  }
+
+  onImageClick(event: Event) {
+    console.log('Image clicked, wasSwipe:', this.wasSwipe);
+    event.stopPropagation();
+    console.log('Flipping card');
+    if (!this.wasSwipe) {
+      this.flipCard();
+    } else {
+      console.log('Ignoring click due to swipe');
+    }
   }
 
   onTouchStart(event: TouchEvent) {
@@ -72,25 +85,40 @@ export class MovieSwipeCardComponent {
     const deltaX = this.endX - this.startX;
     const deltaY = this.endY - this.startY;
 
-    // Determines if horizontal or vertical swipe
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      // Horizontal swipe
-      if (Math.abs(deltaX) > this.minSwipeDistance) {
-        if (deltaX > 0) {
-          this.swipeRight(); // Not seen + Liked + Saved
-        } else {
-          this.swipeLeft(); // Not seen + Not Liked + Not Saved
+    // Without this, a click is considered a swipe
+    const isActualSwipe =
+      Math.abs(deltaX) > this.minSwipeDistance ||
+      Math.abs(deltaY) > this.minSwipeDistance;
+
+    if (isActualSwipe) {
+      this.wasSwipe = true;
+      console.log('Actual swipe detected, setting wasSwipe = true;');
+      // Determines if horizontal or vertical swipe
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Horizontal swipe
+        if (Math.abs(deltaX) > this.minSwipeDistance) {
+          if (deltaX > 0) {
+            this.swipeRight(); // Not seen + Liked + Saved
+          } else {
+            this.swipeLeft(); // Not seen + Not Liked + Not Saved
+          }
+        }
+      } else {
+        // Vertical Swipe
+        if (Math.abs(deltaY) > this.minSwipeDistance) {
+          if (deltaY < 0) {
+            this.swipeUp(); // Seen + Liked + Save
+          } else {
+            this.swipeDown(); // Seen + Not Liked + Not Saved
+          }
         }
       }
+      setTimeout(() => {
+        this.wasSwipe = false;
+        console.log('Reset wasSwipe to false');
+      }, 300);
     } else {
-      // Vertical Swipe
-      if (Math.abs(deltaY) > this.minSwipeDistance) {
-        if (deltaY < 0) {
-          this.swipeUp(); // Seen + Liked + Save
-        } else {
-          this.swipeDown(); // Seen + Not Liked + Not Saved
-        }
-      }
+      console.log('Not a swipe, just a click');
     }
   }
 

@@ -15,7 +15,7 @@
       <img
         [ngSrc]="movie.posterUrl"
         alt="{{ movie.title }}"
-        (click)="flipCard()"
+        (click)="onImageClick($event)"
         width="300"
         height="450"
       />
