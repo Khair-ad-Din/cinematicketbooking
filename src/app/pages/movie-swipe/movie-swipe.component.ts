@@ -1,3 +1,4 @@
+import { UserPreferencesService } from './../../services/user-preferences.service';
 import { MovieService } from './../../services/movie.service';
 import { CommonModule } from '@angular/common';
 import { MovieSwipeCardComponent } from '../../components/movie-swipe-card/movie-swipe-card.component';
@@ -18,6 +19,7 @@ import {
 })
 export class MovieSwipeComponent {
   private MovieService = inject(MovieService);
+  private preferencesService = inject(UserPreferencesService);
 
   movies = this.MovieService.movies;
   loading = this.MovieService.loading;
@@ -42,7 +44,18 @@ export class MovieSwipeComponent {
 
   // Handle swipe completion from child
   onMovieRated(rating: string) {
-    console.log('Movie rated: ', rating);
+    const currentMovie = this.currentMovie();
+    if (currentMovie) {
+      // Save the preference
+      this.preferencesService.addPreference(currentMovie, rating);
+      console.log('Movie rated: ' + rating, 'for: ', currentMovie.title);
+
+      // Show saved preferences (for testing)
+      console.log(
+        'All preferences: ',
+        this.preferencesService.getUserPreferences().preferences
+      );
+    }
     this.nextMovie();
   }
 
