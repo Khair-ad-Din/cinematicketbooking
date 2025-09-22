@@ -43,10 +43,6 @@ export class MovieSwipeCardComponent {
   }
 
   onImageClick(event: Event) {
-    console.log('Image clicked, wasSwipe:', this.wasSwipe);
-    console.log('Current dragDistance:', this.dragDistance());
-    console.log('isDragging:', this.isDragging());
-
     // Calculate total movement during this interaction
     const totalMovement = Math.sqrt(
       Math.pow(this.endX - this.startX, 2) +
@@ -54,7 +50,6 @@ export class MovieSwipeCardComponent {
     );
 
     event.stopPropagation();
-    console.log('Flipping card');
     // TODO: Investigate why 5px is perfect for preventing unpretended flips accross all image.
     // Tried as first approach for testing and for some reason is perfect but my logic says it shouldn't be.
     if (!this.wasSwipe && totalMovement < 5) {
@@ -96,11 +91,6 @@ export class MovieSwipeCardComponent {
 
   onMouseMove(event: MouseEvent) {
     if (this.isMouseDown) {
-      console.log(
-        'Mouse moving:',
-        event.clientX - this.startX,
-        event.clientY - this.startY
-      );
       const deltaX = event.clientX - this.startX;
       const deltaY = event.clientY - this.startY;
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -169,7 +159,6 @@ export class MovieSwipeCardComponent {
     if (isActualSwipe) {
       this.wasSwipe = true;
       this.isAnimating.set(true);
-      console.log('Actual swipe detected, setting wasSwipe = true;');
       // Determines if horizontal or vertical swipe
       if (Math.abs(deltaX) > Math.abs(deltaY)) {
         // Horizontal swipe
@@ -194,7 +183,6 @@ export class MovieSwipeCardComponent {
         this.wasSwipe = false;
         this.isAnimating.set(false);
         this.swipeDirection.set('');
-        console.log('Reset wasSwipe to false');
       }, 300);
     } else {
       console.log('Not a swipe, just a click');
@@ -202,25 +190,21 @@ export class MovieSwipeCardComponent {
   }
 
   swipeUp() {
-    console.log('Seen + Liked + Save');
     this.swipeDirection.set('up');
     this.movieRated.emit('seen-liked');
   }
 
   swipeDown() {
-    console.log('Seen + Not Liked + Not Saved');
     this.swipeDirection.set('down');
     this.movieRated.emit('seen-disliked');
   }
 
   swipeLeft() {
-    console.log('Not seen + Not Liked + Not Saved');
     this.swipeDirection.set('left');
     this.movieRated.emit('not-seen-disliked');
   }
 
   swipeRight() {
-    console.log('Not seen + Liked + Saved');
     this.swipeDirection.set('right');
     this.movieRated.emit('not-seen-liked');
   }

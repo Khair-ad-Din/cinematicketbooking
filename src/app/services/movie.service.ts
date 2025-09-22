@@ -81,6 +81,8 @@ export class MovieService {
   private _movies = signal<Movie[]>([]);
 
   private mapTmdbToMovie(tmdbMovie: TmdbMovie): Movie {
+    const cachedDuration = this.getDurationFromCache(tmdbMovie.id);
+
     return {
       id: tmdbMovie.id,
       title: tmdbMovie.title,
@@ -89,7 +91,7 @@ export class MovieService {
       releaseDate: new Date(tmdbMovie.release_date),
       rating: Math.round(tmdbMovie.vote_average * 10) / 10,
       genre: this.mapGenreId(tmdbMovie.genre_ids),
-      duration: 120, //TODO: Seek which API call offers the film duration; 120min for now.
+      duration: cachedDuration || 0,
     };
   }
 
@@ -117,7 +119,47 @@ export class MovieService {
     return genreIds.map((id) => this.genreMap[id] || 'Desconocido');
   }
 
+  private getDurationFromCache(movieId: number): number | null {
+    const cache = JSON.parse(localStorage.getItem('movie-durations') || '{}');
+    return cache[movieId] || null;
+  }
+
+  private saveDurationToCache(movieId: number, duration: number) {
+    const cache = JSON.parse(localStorage.getItem('movie-durations') || '{}');
+    cache[movieId] = duration;
+    localStorage.setItem('movie-durations', JSON.stringify(cache));
+  }
+
+  private fetchMissingDurations(tmdbMovies: TmdbMovie[]) {
+    const moviesNeedingDurations = tmdbMovies.filter(
+      (movie) => !this.getDurationFromCache(movie.id)
+    );
+
+    moviesNeedingDurations.forEach((movie) => {
+      this.tmdbService.getMovieDetails(movie.id).subscribe({
+        next: (details) => {
+          if (details.runtime) {
+            this.saveDurationToCache(movie.id, details.runtime);
+            this.updateMovieDuration(movie.id, details.runtime);
+          }
+        },
+        error: (error) =>
+          console.error(`Failer to fetch duration for ${movie.title}:`, error),
+      });
+    });
+  }
+
+  // Helper to update movie duration
+  private updateMovieDuration(movieId: number, duration: number) {
+    const currentMovies = this._movies();
+    const updatedMovies = currentMovies.map((movie) =>
+      movie.id === movieId ? { ...movie, duration } : movie
+    );
+    this._movies.set(updatedMovies);
+  }
+
   fetchMovies() {
+    // Prevent Duplicated Calls
     if (this.hasDataBeenFetched) return;
     this.hasDataBeenFetched = true;
     this.loading.set(true);
@@ -127,6 +169,7 @@ export class MovieService {
           this.mapTmdbToMovie(tmdbMovie)
         );
         this._movies.set(tmdbMovies);
+        this.fetchMissingDurations(response.results);
         this.loading.set(false);
       },
       error: (error) => {

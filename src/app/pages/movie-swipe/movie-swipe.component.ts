@@ -48,7 +48,6 @@ export class MovieSwipeComponent {
     if (currentMovie) {
       // Save the preference
       this.preferencesService.addPreference(currentMovie, rating);
-      console.log('Movie rated: ' + rating, 'for: ', currentMovie.title);
 
       // Show saved preferences (for testing)
       console.log(
