@@ -13,11 +13,35 @@
   width: 80vw;
   height: 80vh;
   transform-style: preserve-3d;
-  transition: transform 0.8s;
+  transition: transform 0.8s, opacity 0.3s;
 }
 
 .card-container.flipped {
   transform: rotateY(-180deg);
+}
+
+.card-container.swipe-up {
+  transform: translateY(-100vh);
+  opacity: 0;
+}
+
+.card-container.swipe-down {
+  transform: translateY(100vh);
+  opacity: 0;
+}
+
+.card-container.swipe-left {
+  transform: translateX(-100vw);
+  opacity: 0;
+}
+
+.card-container.swipe-right {
+  transform: translateX(100vw);
+  opacity: 0;
+}
+
+.card-container.animating {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }
 
 .card-front,
@@ -57,6 +81,30 @@
   border-radius: 0.25rem;
 }
 
+.drag-indicator {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    /* transform: translateX(-50%); */
+    padding: 0.75rem 1.5rem;
+    background: rgba(0, 0, 0, 0.8);
+    /* backdrop-filter: blur(10px); */
+    border-radius: 1rem;
+    color: white;
+    font-weight: bold;
+    white-space: nowrap;
+    /* z-index: 10; */
+    opacity: 0;
+    transform: translateX(-50%) scale(0.8);
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+    /* pointer-events: none; */
+  }
+
+  .drag-indicator.show {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+
 /* Desktop */
 @media (min-width: 48rem) {
   .card-container {
@@ -67,4 +115,90 @@
   .card-container:active {
     cursor: grabbing;
   }
+}
+
+/* Swipe Direction Indicators */
+.swipe-indicators {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.swipe-indicators.show {
+  opacity: 1;
+}
+
+.indicator {
+  position: absolute;
+  padding: 1rem 2rem;
+  border-radius: 2rem;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  white-space: nowrap;
+  opacity: 0.3;
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.indicator.active {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.indicator.up {
+  top: -8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(34, 197, 94, 0.9);
+}
+
+.indicator.down {
+  bottom: -8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(239, 68, 68, 0.9);
+}
+
+.indicator.left {
+  left: -12rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(156, 163, 175, 0.9);
+}
+
+.indicator.right {
+  right: -12rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(59, 130, 246, 0.9);
+}
+
+.indicator.up.active {
+  top: -8rem;
+  left: 50%;
+  transform: translateX(-50%) scale(1.1);
+}
+
+.indicator.down.active {
+  bottom: -8rem;
+  left: 50%;
+  transform: translateX(-50%) scale(1.1);
+}
+
+.indicator.left.active {
+  left: -12rem;
+  top: 50%;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.indicator.right.active {
+  right: -12rem;
+  top: 50%;
+  transform: translateY(-50%) scale(1.1);
 }

@@ -2,16 +2,30 @@
   <div
     class="card-container"
     [class.flipped]="isFlipped()"
+    [class.swipe-up]="swipeDirection() === 'up'"
+    [class.swipe-down]="swipeDirection() === 'down'"
+    [class.swipe-left]="swipeDirection() === 'left'"
+    [class.swipe-right]="swipeDirection() === 'right'"
+    [class.dragging]="isDragging()"
     (touchstart)="onTouchStart($event)"
     (touchend)="onTouchEnd($event)"
     (mousedown)="onMouseDown($event)"
     (mouseup)="onMouseUp($event)"
     (mouseleave)="onMouseLeave($event)"
+    (touchmove)="onTouchMove($event)"
+    (mousemove)="onMouseMove($event)"
     draggable="false"
     [style.user-select]="'none'"
   >
     <!-- Front Side -->
     <div class="card-front">
+      <div
+        class="drag-indicator"
+        [class.show]="isDragging() && dragDistance() > minSwipeDistance"
+      >
+        {{ dragIndicatorText() }}
+      </div>
+      <h3>{{ movie.title }}</h3>
       <img
         [ngSrc]="movie.posterUrl"
         alt="{{ movie.title }}"
@@ -20,7 +34,6 @@
         height="450"
       />
       <div class="card-info">
-        <h3>{{ movie.title }}</h3>
         <p class="genres">{{ movie.genre.join(" • ") }}</p>
         <p class="rating">★ {{ movie.rating }}/10</p>
       </div>

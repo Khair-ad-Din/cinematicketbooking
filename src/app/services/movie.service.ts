@@ -1,12 +1,35 @@
-import { Injectable, signal } from '@angular/core';
+import { TmdbMovie } from './../interfaces/tmdb-movie';
+import { TmdbService } from './tmdb.service';
+import { inject, Injectable, signal } from '@angular/core';
 import { Movie } from '../interfaces/movie';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MovieService {
-  // Mock movie data (will be replaced with API calls later)
-  private _movies = signal<Movie[]>([
+  private genreMap: { [key: number]: string } = {
+    28: 'Acción',
+    12: 'Aventura',
+    16: 'Animación',
+    35: 'Comedia',
+    80: 'Crimen',
+    99: 'Documental',
+    18: 'Drama',
+    10751: 'Familia',
+    14: 'Fantasía',
+    36: 'Historia',
+    27: 'Terror',
+    10402: 'Música',
+    9648: 'Misterio',
+    10749: 'Romance',
+    878: 'Ciencia Ficción',
+    10770: 'Película de TV',
+    53: 'Thriller',
+    10752: 'Bélica',
+    37: 'Western',
+  };
+
+  private readonly FALLBACK_MOVIES: Movie[] = [
     {
       id: 1,
       title: 'Los 4 Fantásticos: Primeros pasos',
@@ -17,7 +40,6 @@ export class MovieService {
       genre: ['Acción', 'Aventura', 'Ciencia Ficción'],
       duration: 115,
       rating: 6.8,
-      showtimes: ['11:00 AM', '3:00 PM', '8:00 PM'],
     },
     {
       id: 2,
@@ -29,7 +51,6 @@ export class MovieService {
       genre: ['Acción', 'Anime'],
       duration: 110,
       rating: 7.5,
-      showtimes: ['1:00 PM', '6:00 PM', '9:00 PM'],
     },
     {
       id: 3,
@@ -41,7 +62,6 @@ export class MovieService {
       genre: ['Acción', 'Aventura', 'Fantasía'],
       duration: 129,
       rating: 6,
-      showtimes: ['12:00 PM', '4:00 PM', '10:00 PM'],
     },
     {
       id: 4,
@@ -53,13 +73,36 @@ export class MovieService {
       rating: 8.9,
       genre: ['Crimen', 'Drama'],
       duration: 154,
-      showtimes: ['12:00 PM', '4:00 PM', '10:00 PM'],
     },
-  ]);
+  ];
+
+  private hasDataBeenFetched = false;
+
+  private _movies = signal<Movie[]>([]);
+
+  private mapTmdbToMovie(tmdbMovie: TmdbMovie): Movie {
+    return {
+      id: tmdbMovie.id,
+      title: tmdbMovie.title,
+      description: tmdbMovie.overview,
+      posterUrl: `https://image.tmdb.org/t/p/w500${tmdbMovie.poster_path}`,
+      releaseDate: new Date(tmdbMovie.release_date),
+      rating: Math.round(tmdbMovie.vote_average * 10) / 10,
+      genre: this.mapGenreId(tmdbMovie.genre_ids),
+      duration: 120, //TODO: Seek which API call offers the film duration; 120min for now.
+    };
+  }
 
   loading = signal<boolean>(false);
+  tmdbService = inject(TmdbService);
 
-  constructor() {}
+  constructor() {
+    // Test TMDB Connection
+    // this.tmdbService.getPopularMovies().subscribe({
+    //   next: (data) => console.log('TMDB Response: ', data),
+    //   error: (error) => console.log('TMDB Error: ', error),
+    // });
+  }
 
   get movies() {
     return this._movies.asReadonly();
@@ -70,12 +113,27 @@ export class MovieService {
     return this._movies().find((movie) => movie.id === id);
   }
 
-  // Method to fetch movies
+  private mapGenreId(genreIds: number[]): string[] {
+    return genreIds.map((id) => this.genreMap[id] || 'Desconocido');
+  }
+
   fetchMovies() {
-    // TODO: Implement API call to fetch movies
+    if (this.hasDataBeenFetched) return;
+    this.hasDataBeenFetched = true;
     this.loading.set(true);
-    setTimeout(() => {
-      this.loading.set(false);
-    }, 1000);
+    this.tmdbService.getPopularMovies().subscribe({
+      next: (response) => {
+        const tmdbMovies = response.results.map((tmdbMovie) =>
+          this.mapTmdbToMovie(tmdbMovie)
+        );
+        this._movies.set(tmdbMovies);
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Failed to fetch movies: ', error);
+        this._movies.set(this.FALLBACK_MOVIES);
+        this.loading.set(false);
+      },
+    });
   }
 }

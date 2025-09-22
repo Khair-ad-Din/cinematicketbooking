@@ -7,5 +7,5 @@ export interface Movie {
   genre: string[];
   duration: number;
   rating: number;
-  showtimes: string[];
+  // showtimes: string[];
 }

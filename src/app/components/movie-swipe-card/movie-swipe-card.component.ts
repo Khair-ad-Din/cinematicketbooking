@@ -5,6 +5,7 @@ import {
   Input,
   Output,
   signal,
+  SimpleChanges,
 } from '@angular/core';
 import { Movie } from '../../interfaces/movie';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
@@ -22,6 +23,11 @@ export class MovieSwipeCardComponent {
   @Output() movieRated = new EventEmitter<string>();
 
   isFlipped = signal<boolean>(false);
+  swipeDirection = signal<string>('');
+  isAnimating = signal<boolean>(false);
+  isDragging = signal<boolean>(false);
+  currentDragX = signal<number>(0);
+  currentDragY = signal<number>(0);
 
   private wasSwipe = false;
 
@@ -29,7 +35,7 @@ export class MovieSwipeCardComponent {
   private startY = 0;
   private endX = 0;
   private endY = 0;
-  private minSwipeDistance = 50; // Min pixels for a swipe.
+  public minSwipeDistance = 100; // Min pixels for a swipe.
   private isMouseDown = false;
 
   flipCard() {
@@ -38,24 +44,46 @@ export class MovieSwipeCardComponent {
 
   onImageClick(event: Event) {
     console.log('Image clicked, wasSwipe:', this.wasSwipe);
+    console.log('Current dragDistance:', this.dragDistance());
+    console.log('isDragging:', this.isDragging());
+
+    // Calculate total movement during this interaction
+    const totalMovement = Math.sqrt(
+      Math.pow(this.endX - this.startX, 2) +
+        Math.pow(this.endY - this.startY, 2)
+    );
+
     event.stopPropagation();
     console.log('Flipping card');
-    if (!this.wasSwipe) {
+    // TODO: Investigate why 5px is perfect for preventing unpretended flips accross all image.
+    // Tried as first approach for testing and for some reason is perfect but my logic says it shouldn't be.
+    if (!this.wasSwipe && totalMovement < 5) {
       this.flipCard();
     } else {
-      console.log('Ignoring click due to swipe');
+      console.log('Ignoring click due to movement:', totalMovement);
     }
   }
 
   onTouchStart(event: TouchEvent) {
     this.startX = event.touches[0].clientX;
     this.startY = event.touches[0].clientY;
+    this.isDragging.set(true);
+  }
+
+  onTouchMove(event: TouchEvent) {
+    const currentX = event.touches[0].clientX;
+    const currentY = event.touches[0].clientY;
+    this.currentDragX.set(currentX - this.startX);
+    this.currentDragY.set(currentY - this.startY);
   }
 
   onTouchEnd(event: TouchEvent) {
     this.endX = event.changedTouches[0].clientX;
     this.endY = event.changedTouches[0].clientY;
     this.handleSwipe();
+    this.isDragging.set(false);
+    this.currentDragX.set(0);
+    this.currentDragY.set(0);
   }
 
   onMouseDown(event: MouseEvent) {
@@ -63,6 +91,25 @@ export class MovieSwipeCardComponent {
     this.startY = event.clientY;
     this.isMouseDown = true;
     event.preventDefault();
+    this.isDragging.set(true);
+  }
+
+  onMouseMove(event: MouseEvent) {
+    if (this.isMouseDown) {
+      console.log(
+        'Mouse moving:',
+        event.clientX - this.startX,
+        event.clientY - this.startY
+      );
+      const deltaX = event.clientX - this.startX;
+      const deltaY = event.clientY - this.startY;
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+      if (distance > this.minSwipeDistance) {
+        this.currentDragX.set(deltaX);
+        this.currentDragY.set(deltaY);
+      }
+    }
   }
 
   onMouseUp(event: MouseEvent) {
@@ -70,6 +117,9 @@ export class MovieSwipeCardComponent {
     this.endY = event.clientY;
     this.handleSwipe();
     this.isMouseDown = false;
+    this.isDragging.set(false);
+    this.currentDragX.set(0);
+    this.currentDragY.set(0);
   }
 
   onMouseLeave(event: MouseEvent) {
@@ -78,6 +128,32 @@ export class MovieSwipeCardComponent {
       this.endY = event.clientY;
       this.handleSwipe();
       this.isMouseDown = false;
+      this.isDragging.set(false);
+      this.currentDragX.set(0);
+      this.currentDragY.set(0);
+    }
+  }
+
+  ngOnChanges(change: SimpleChanges) {
+    if (change['movie'] && !change['movie'].firstChange) {
+      this.isFlipped.set(false);
+    }
+  }
+
+  dragDistance() {
+    const deltaX = this.currentDragX();
+    const deltaY = this.currentDragY();
+    return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+  }
+
+  dragIndicatorText() {
+    const deltaX = this.currentDragX();
+    const deltaY = this.currentDragY();
+
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      return deltaX > 0 ? '⭐ Want to watch' : '❌ Skip';
+    } else {
+      return deltaY < 0 ? '❤️ Loved it!' : '👎 Not for me';
     }
   }
 
@@ -92,6 +168,7 @@ export class MovieSwipeCardComponent {
 
     if (isActualSwipe) {
       this.wasSwipe = true;
+      this.isAnimating.set(true);
       console.log('Actual swipe detected, setting wasSwipe = true;');
       // Determines if horizontal or vertical swipe
       if (Math.abs(deltaX) > Math.abs(deltaY)) {
@@ -115,6 +192,8 @@ export class MovieSwipeCardComponent {
       }
       setTimeout(() => {
         this.wasSwipe = false;
+        this.isAnimating.set(false);
+        this.swipeDirection.set('');
         console.log('Reset wasSwipe to false');
       }, 300);
     } else {
@@ -124,21 +203,25 @@ export class MovieSwipeCardComponent {
 
   swipeUp() {
     console.log('Seen + Liked + Save');
+    this.swipeDirection.set('up');
     this.movieRated.emit('seen-liked');
   }
 
   swipeDown() {
     console.log('Seen + Not Liked + Not Saved');
+    this.swipeDirection.set('down');
     this.movieRated.emit('seen-disliked');
   }
 
   swipeLeft() {
     console.log('Not seen + Not Liked + Not Saved');
+    this.swipeDirection.set('left');
     this.movieRated.emit('not-seen-disliked');
   }
 
   swipeRight() {
     console.log('Not seen + Liked + Saved');
+    this.swipeDirection.set('right');
     this.movieRated.emit('not-seen-liked');
   }
 }
