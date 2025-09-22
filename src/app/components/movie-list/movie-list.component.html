@@ -21,7 +21,7 @@
       <input
         type="checkbox"
         [value]="genre"
-        (change)="onGenreCheckboxChange(genre, $event.target.checked)"
+        (change)="onGenreCheckboxChange(genre, $event)"
       /><label>{{ genre }}</label>
       }
     </div>
@@ -60,6 +60,19 @@
   } @empty {
   <br />
   <p>No movies available.</p>
+  }
+  <!-- Back to Top Button -->
+  @if(showBackToTop()){
+  <button class="back-to-top-btn" (click)="scrollToTopAndCollapse()">
+    ↑ Back to Top
+  </button>
+  }
+</div>
+<div #scrollTrigger class="scroll-trigger">
+  @if (movieService.loadingMore()) {
+  <div class="loading-mode">
+    <p>Loading more movies...</p>
+  </div>
   }
 </div>
 }

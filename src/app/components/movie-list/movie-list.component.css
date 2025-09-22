@@ -39,6 +39,36 @@
   height: auto;
 }
 
+.scroll-trigger {
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-more {
+  padding: 1rem;
+}
+
+.back-to-top-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border: none;
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1000;
+    transition: background 0.3s ease;
+  }
+
+  .back-to-top-btn:hover {
+    background: rgba(0, 0, 0, 1);
+  }
+
 /* Desktop */
 @media (min-width: 48rem) {
 

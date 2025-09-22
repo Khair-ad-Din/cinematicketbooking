@@ -28,7 +28,6 @@ export class MovieService {
     10752: 'Bélica',
     37: 'Western',
   };
-
   private readonly FALLBACK_MOVIES: Movie[] = [
     {
       id: 1,
@@ -76,9 +75,18 @@ export class MovieService {
     },
   ];
 
-  private hasDataBeenFetched = false;
-
+  private hasInitialDataBeenFetched = false;
+  loading = signal<boolean>(false);
+  tmdbService = inject(TmdbService);
   private _movies = signal<Movie[]>([]);
+
+  // Pagination Config
+  private readonly MAX_MOVIES = 140;
+  private readonly MOVIES_PER_PAGE = 20;
+  private currentPage = 1;
+  private maxPages = Math.ceil(this.MAX_MOVIES / this.MOVIES_PER_PAGE);
+  private allLoadedMovies: Movie[] = []; // Master array for filtering
+  private isLoadingMore = signal<boolean>(false);
 
   private mapTmdbToMovie(tmdbMovie: TmdbMovie): Movie {
     const cachedDuration = this.getDurationFromCache(tmdbMovie.id);
@@ -94,9 +102,6 @@ export class MovieService {
       duration: cachedDuration || 0,
     };
   }
-
-  loading = signal<boolean>(false);
-  tmdbService = inject(TmdbService);
 
   constructor() {
     // Test TMDB Connection
@@ -160,8 +165,8 @@ export class MovieService {
 
   fetchMovies() {
     // Prevent Duplicated Calls
-    if (this.hasDataBeenFetched) return;
-    this.hasDataBeenFetched = true;
+    if (this.hasInitialDataBeenFetched) return;
+    this.hasInitialDataBeenFetched = true;
     this.loading.set(true);
     this.tmdbService.getPopularMovies().subscribe({
       next: (response) => {
@@ -169,6 +174,7 @@ export class MovieService {
           this.mapTmdbToMovie(tmdbMovie)
         );
         this._movies.set(tmdbMovies);
+        this.allLoadedMovies = tmdbMovies; // Store in Master Array
         this.fetchMissingDurations(response.results);
         this.loading.set(false);
       },
@@ -178,5 +184,47 @@ export class MovieService {
         this.loading.set(false);
       },
     });
+  }
+
+  loadMoreMovies() {
+    if (this.currentPage >= this.maxPages || this.isLoadingMore()) return;
+
+    this.currentPage++;
+    this.isLoadingMore.set(true);
+
+    this.tmdbService.getPopularMovies(this.currentPage).subscribe({
+      next: (response) => {
+        const newMovies = response.results.map((TmdbMovie) =>
+          this.mapTmdbToMovie(TmdbMovie)
+        );
+
+        // Add to Master Array | Keep all loaded movies in memory for filtering
+        this.allLoadedMovies = [...this.allLoadedMovies, ...newMovies];
+
+        // Update displayed Movies
+        this._movies.set(this.allLoadedMovies);
+
+        // Cache durations for new movies only
+        this.fetchMissingDurations(response.results);
+        this.isLoadingMore.set(false);
+      },
+      error: (error) => {
+        console.error(`Failer to fetch page ${this.currentPage}`, error);
+        this.currentPage--; // Reset page on error
+        this.isLoadingMore.set(false);
+      },
+    });
+  }
+
+  get loadingMore() {
+    return this.isLoadingMore.asReadonly();
+  }
+
+  resetToFirstPage() {
+    this.currentPage = 1;
+
+    const firstPageMovies = this.allLoadedMovies.slice(0, this.MOVIES_PER_PAGE);
+    this.allLoadedMovies = firstPageMovies;
+    this._movies.set(firstPageMovies);
   }
 }
