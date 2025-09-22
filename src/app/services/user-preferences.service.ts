@@ -4,11 +4,7 @@ import { Movie } from '../interfaces/movie';
 interface MoviePreference {
   movieId: number;
   title: string;
-  rating:
-    | 'seen-liked'
-    | 'seen-disliked'
-    | 'not-seen-liked'
-    | 'not-seen-disliked';
+  rating: 'seen-liked' | 'disliked' | 'not-seen-liked' | 'skip';
   timestamp: Date;
 }
 
@@ -25,6 +21,17 @@ export class UserPreferencesService {
   private preferences = signal<UserPreferences>(this.initializePreferences());
   // Future: Easy to add user login
   private currentUserId = signal<string | null>(null);
+
+  private lastAction = signal<MoviePreference | null>(null);
+  private canUndo = signal<boolean>(false);
+
+  get undoAvailable() {
+    return this.canUndo.asReadonly();
+  }
+
+  private generateSessionId(): string {
+    return 'session-' + Date.now() + Math.random().toString(36).substring(2, 9);
+  }
 
   private initializePreferences(): UserPreferences {
     const stored = localStorage.getItem('user-preferences');
@@ -47,10 +54,6 @@ export class UserPreferencesService {
     };
   }
 
-  private generateSessionId(): string {
-    return 'session-' + Date.now() + Math.random().toString(36).substring(2, 9);
-  }
-
   addPreference(movie: Movie, rating: string) {
     const newPreference: MoviePreference = {
       movieId: movie.id,
@@ -58,6 +61,9 @@ export class UserPreferencesService {
       rating: rating as any, // Cast to the union type
       timestamp: new Date(),
     };
+
+    this.lastAction.set(newPreference);
+    this.canUndo.set(true);
 
     this.preferences.update((current) => {
       const updated = {
@@ -74,6 +80,30 @@ export class UserPreferencesService {
   getUserPreferences() {
     return this.preferences();
     // Future: Fetch from backend API
+  }
+
+  undoLastAction(): MoviePreference | null {
+    const lastAction = this.lastAction();
+    if (!lastAction || !this.canUndo()) return null;
+
+    this.preferences.update((current) => {
+      const updated = {
+        ...current,
+        preferences: current.preferences.filter(
+          (pref) =>
+            pref.movieId !== lastAction.movieId ||
+            pref.timestamp !== lastAction.timestamp
+        ),
+        updatedAt: new Date(),
+      };
+      localStorage.setItem('user-preferences', JSON.stringify(updated));
+      return updated;
+    });
+
+    this.lastAction.set(null);
+    this.canUndo.set(false);
+
+    return lastAction;
   }
 
   clearUserPreferences() {

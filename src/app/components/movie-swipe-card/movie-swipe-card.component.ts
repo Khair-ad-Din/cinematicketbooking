@@ -141,9 +141,9 @@ export class MovieSwipeCardComponent {
     const deltaY = this.currentDragY();
 
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      return deltaX > 0 ? '⭐ Want to watch' : '❌ Skip';
+      return deltaX > 0 ? '⭐ Want to watch' : '👎 Not for me';
     } else {
-      return deltaY < 0 ? '❤️ Loved it!' : '👎 Not for me';
+      return deltaY < 0 ? "❤️ I'd love to rewatch!" : '❌ Skip';
     }
   }
 
@@ -164,18 +164,18 @@ export class MovieSwipeCardComponent {
         // Horizontal swipe
         if (Math.abs(deltaX) > this.minSwipeDistance) {
           if (deltaX > 0) {
-            this.swipeRight(); // Not seen + Liked + Saved
+            this.swipeRight(); // Not seen + Liked
           } else {
-            this.swipeLeft(); // Not seen + Not Liked + Not Saved
+            this.swipeLeft(); // Disliked
           }
         }
       } else {
         // Vertical Swipe
         if (Math.abs(deltaY) > this.minSwipeDistance) {
           if (deltaY < 0) {
-            this.swipeUp(); // Seen + Liked + Save
+            this.swipeUp(); // Seen + Liked
           } else {
-            this.swipeDown(); // Seen + Not Liked + Not Saved
+            this.swipeDown(); // Skip
           }
         }
       }
@@ -196,12 +196,12 @@ export class MovieSwipeCardComponent {
 
   swipeDown() {
     this.swipeDirection.set('down');
-    this.movieRated.emit('seen-disliked');
+    this.movieRated.emit('skip');
   }
 
   swipeLeft() {
     this.swipeDirection.set('left');
-    this.movieRated.emit('not-seen-disliked');
+    this.movieRated.emit('disliked');
   }
 
   swipeRight() {

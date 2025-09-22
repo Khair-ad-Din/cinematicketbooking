@@ -1,0 +1,19 @@
+.undo-container {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .undo-btn {
+    background: rgba(255, 152, 0, 0.9);
+    color: white;
+    border: none;
+    border-radius: 1rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
+
+  .undo-btn:hover {
+    background: rgba(255, 152, 0, 1);
+  }

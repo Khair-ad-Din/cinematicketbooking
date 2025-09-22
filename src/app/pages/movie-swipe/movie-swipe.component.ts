@@ -24,6 +24,9 @@ export class MovieSwipeComponent {
   movies = this.MovieService.movies;
   loading = this.MovieService.loading;
 
+  undoAvailable = this.preferencesService.undoAvailable;
+  private lastMovieIndex = signal<number>(-1);
+
   currentMovieIndex = signal<number>(0);
   currentMovie = computed(() => {
     const movieList = this.movies();
@@ -46,6 +49,8 @@ export class MovieSwipeComponent {
   onMovieRated(rating: string) {
     const currentMovie = this.currentMovie();
     if (currentMovie) {
+      // Store current index before moving to next movie
+      this.lastMovieIndex.set(this.currentMovieIndex());
       // Save the preference
       this.preferencesService.addPreference(currentMovie, rating);
 
@@ -56,6 +61,15 @@ export class MovieSwipeComponent {
       );
     }
     this.nextMovie();
+  }
+
+  undoLastSwipe() {
+    const undoneAction = this.preferencesService.undoLastAction();
+    if (undoneAction && this.lastMovieIndex() >= 0) {
+      // Go back to the preious movie
+      this.currentMovieIndex.set(this.lastMovieIndex());
+      this.lastMovieIndex.set(-1);
+    }
   }
 
   constructor() {
