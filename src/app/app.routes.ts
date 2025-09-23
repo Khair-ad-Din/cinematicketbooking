@@ -4,8 +4,8 @@ import { HomeComponent } from './home/home';
 import { MovieDetailsComponent } from './components/movie-details/movie-details.component';
 import { MovieSwipeComponent } from './pages/movie-swipe/movie-swipe.component';
 import { ConfigProfileComponent } from './pages/config-profile/config-profile.component';
-import { LoginComponent } from './components/auth/login/login.component/login.component';
-import { RegisterComponent } from './components/auth/login/register.component/register.component';
+import { LoginComponent } from './components/auth/login/login/login.component';
+import { RegisterComponent } from './components/auth/login/register/register.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
