@@ -15,6 +15,8 @@
     <p><strong>Genre: </strong> {{ selectedMovie.genre.join(", ") }}</p>
     <p><strong>Duration: </strong> {{ selectedMovie.duration }} minutes</p>
     <p><strong>Rating: </strong> {{ selectedMovie.rating }}</p>
+    <p><strong>Director: </strong> {{ selectedMovie.director }}</p>
+    <p><strong>Cast: </strong> {{ selectedMovie.cast?.join(", ") }}</p>
 
     <!-- @if (selectedMovie.showtimes && selectedMovie.showtimes.length > 0; as
     showtimes) {

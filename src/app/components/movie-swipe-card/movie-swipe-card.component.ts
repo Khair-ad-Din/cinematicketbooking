@@ -1,7 +1,9 @@
+import { TmdbService } from './../../services/tmdb.service';
 import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  inject,
   Input,
   Output,
   signal,
@@ -16,11 +18,13 @@ import { RouterLink } from '@angular/router';
   templateUrl: './movie-swipe-card.component.html',
   styleUrl: './movie-swipe-card.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NgOptimizedImage, RouterLink],
+  imports: [CommonModule, NgOptimizedImage],
 })
 export class MovieSwipeCardComponent {
   @Input() movie!: Movie; //Receive movies from parent.
   @Output() movieRated = new EventEmitter<string>();
+
+  private TmdbService = inject(TmdbService);
 
   isFlipped = signal<boolean>(false);
   swipeDirection = signal<string>('');
@@ -37,6 +41,8 @@ export class MovieSwipeCardComponent {
   private endY = 0;
   public minSwipeDistance = 100; // Min pixels for a swipe.
   private isMouseDown = false;
+
+  loadingTrailer = signal<boolean>(false);
 
   flipCard() {
     this.isFlipped.update((current) => !current);
@@ -207,5 +213,36 @@ export class MovieSwipeCardComponent {
   swipeRight() {
     this.swipeDirection.set('right');
     this.movieRated.emit('not-seen-liked');
+  }
+
+  watchTrailer() {
+    this.loadingTrailer.set(true);
+
+    this.TmdbService.getMovieVideos(this.movie.id).subscribe({
+      next: (videos) => {
+        const youtubeTrailer = videos.results?.find(
+          (video: any) =>
+            video.site === 'YouTube' &&
+            video.type === 'Trailer' &&
+            video.official === true
+        );
+
+        if (youtubeTrailer) {
+          window.open(
+            `https://www.youtube.com/watch?v=${youtubeTrailer.key}`,
+            '_blank'
+          );
+        } else {
+          alert('No trailer available for this movie');
+        }
+
+        this.loadingTrailer.set(false);
+      },
+      error: (error) => {
+        console.error('Failer to fetch trailer:', error);
+        alert('Could not load trailer');
+        this.loadingTrailer.set(false);
+      },
+    });
   }
 }

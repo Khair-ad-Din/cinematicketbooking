@@ -14,7 +14,7 @@ import { MovieService } from '../../services/movie.service';
   templateUrl: './movie-details.component.html',
   styleUrl: './movie-details.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NgOptimizedImage, RouterLink],
+  imports: [CommonModule, NgOptimizedImage],
 })
 export class MovieDetailsComponent {
   private route = inject(ActivatedRoute);

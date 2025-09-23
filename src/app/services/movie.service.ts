@@ -2,6 +2,7 @@ import { TmdbMovie } from './../interfaces/tmdb-movie';
 import { TmdbService } from './tmdb.service';
 import { inject, Injectable, signal } from '@angular/core';
 import { Movie } from '../interfaces/movie';
+import { forkJoin } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -90,6 +91,7 @@ export class MovieService {
 
   private mapTmdbToMovie(tmdbMovie: TmdbMovie): Movie {
     const cachedDuration = this.getDurationFromCache(tmdbMovie.id);
+    const cachedCredits = this.getCreditsFromCache(tmdbMovie.id);
 
     return {
       id: tmdbMovie.id,
@@ -100,6 +102,8 @@ export class MovieService {
       rating: Math.round(tmdbMovie.vote_average * 10) / 10,
       genre: this.mapGenreId(tmdbMovie.genre_ids),
       duration: cachedDuration || 0,
+      director: cachedCredits?.director,
+      cast: cachedCredits?.cast,
     };
   }
 
@@ -135,32 +139,75 @@ export class MovieService {
     localStorage.setItem('movie-durations', JSON.stringify(cache));
   }
 
-  private fetchMissingDurations(tmdbMovies: TmdbMovie[]) {
-    const moviesNeedingDurations = tmdbMovies.filter(
-      (movie) => !this.getDurationFromCache(movie.id)
+  private getCreditsFromCache(
+    movieId: number
+  ): { director?: string; cast?: string[] } | null {
+    const cache = JSON.parse(localStorage.getItem('movie-credits') || '{}');
+    return cache[movieId] || null;
+  }
+
+  private saveCreditsToCache(
+    movieId: number,
+    director?: string,
+    cast?: string[]
+  ) {
+    const cache = JSON.parse(localStorage.getItem('movie-credits') || '{}');
+    cache[movieId] = { director, cast };
+    localStorage.setItem('movie-credits', JSON.stringify(cache));
+  }
+
+  private fetchMissingDetails(tmdbMovies: TmdbMovie[]) {
+    const moviesNeedingDetails = tmdbMovies.filter(
+      (movie) =>
+        !this.getDurationFromCache(movie.id) ||
+        !this.getCreditsFromCache(movie.id)
     );
 
-    moviesNeedingDurations.forEach((movie) => {
-      this.tmdbService.getMovieDetails(movie.id).subscribe({
-        next: (details) => {
+    moviesNeedingDetails.forEach((movie) => {
+      const detailsCall = this.tmdbService.getMovieDetails(movie.id);
+      const creditsCall = this.tmdbService.getMovieCredits(movie.id);
+
+      // ForkJoin used to wait for both calls
+      forkJoin([detailsCall, creditsCall]).subscribe({
+        next: ([details, credits]) => {
           if (details.runtime) {
             this.saveDurationToCache(movie.id, details.runtime);
-            this.updateMovieDuration(movie.id, details.runtime);
           }
+
+          const director = credits.crew?.find(
+            (member: any) => member.job === 'Director'
+          )?.name;
+          const cast = credits.cast
+            ?.slice(0, 10)
+            .map((actor: any) => actor.name);
+
+          this.saveCreditsToCache(movie.id, director, cast);
+
+          this.updateMovieDetails(movie.id, details.runtime, director, cast);
         },
         error: (error) =>
-          console.error(`Failer to fetch duration for ${movie.title}:`, error),
+          console.error(`Failer to fetch details for ${movie.title}:`, error),
       });
     });
   }
 
-  // Helper to update movie duration
-  private updateMovieDuration(movieId: number, duration: number) {
+  // Helper to update movie details
+  private updateMovieDetails(
+    movieId: number,
+    duration: number,
+    director?: string,
+    cast?: string[]
+  ) {
     const currentMovies = this._movies();
     const updatedMovies = currentMovies.map((movie) =>
-      movie.id === movieId ? { ...movie, duration } : movie
+      movie.id === movieId ? { ...movie, duration, director, cast } : movie
     );
     this._movies.set(updatedMovies);
+
+    // Also update allLoadedMovies array for filtering
+    this.allLoadedMovies = this.allLoadedMovies.map((movie) =>
+      movie.id === movieId ? { ...movie, duration, director, cast } : movie
+    );
   }
 
   fetchMovies() {
@@ -175,7 +222,7 @@ export class MovieService {
         );
         this._movies.set(tmdbMovies);
         this.allLoadedMovies = tmdbMovies; // Store in Master Array
-        this.fetchMissingDurations(response.results);
+        this.fetchMissingDetails(response.results);
         this.loading.set(false);
       },
       error: (error) => {
@@ -205,7 +252,7 @@ export class MovieService {
         this._movies.set(this.allLoadedMovies);
 
         // Cache durations for new movies only
-        this.fetchMissingDurations(response.results);
+        this.fetchMissingDetails(response.results);
         this.isLoadingMore.set(false);
       },
       error: (error) => {

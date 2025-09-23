@@ -24,6 +24,18 @@ export class TmdbService {
     );
   }
 
+  getMovieCredits(movieId: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.baseUrl}/movie/${movieId}/credits?api_key=${this.apiKey}`
+    );
+  }
+
+  getMovieVideos(movieId: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.baseUrl}/movie/${movieId}/videos?api_key=${this.apiKey}`
+    );
+  }
+
   discoverMovies(params: any = {}): Observable<TmdbResponse> {
     const queryParams = new URLSearchParams({
       api_key: this.apiKey,

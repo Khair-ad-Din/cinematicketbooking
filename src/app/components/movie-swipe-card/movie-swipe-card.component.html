@@ -45,7 +45,13 @@
         <h3>{{ movie.title }}</h3>
         <p>{{ movie.description }}</p>
         <button class="flip-back-btn" (click)="flipCard()">Back</button>
-        <button class="trailer-btn">Watch Trailer</button>
+        <button
+          class="trailer-btn"
+          (click)="watchTrailer()"
+          [disabled]="loadingTrailer()"
+        >
+          {{ loadingTrailer() ? "Loading..." : "Watch Trailer" }}
+        </button>
       </div>
     </div>
   </div>

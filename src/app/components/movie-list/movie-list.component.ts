@@ -44,8 +44,13 @@ export class MovieListComponent implements OnInit, AfterViewInit, OnDestroy {
     const allMovies = this.movies();
 
     return allMovies.filter((movie) => {
+      // Unified search: title, director, cast
       const matchesSearchTerm = searchTerm
-        ? movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+        ? movie.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          movie.director?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          movie.cast?.some((actor) =>
+            actor.toLowerCase().includes(searchTerm.toLowerCase())
+          )
         : true;
       const matchesSelectedGenres =
         selectedGenres.length > 0
