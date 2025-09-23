@@ -1,0 +1,60 @@
+<div class="register-container">
+  <div class="register-card">
+    <h2>Create Account</h2>
+
+    <!-- Registration From -->
+    <form (ngSubmit)="onRegister()" class="register-form">
+      <div class="form-group">
+        <input
+          type="text"
+          placeholder="Full Name or Nickname"
+          [value]="name()"
+          (input)="name.set($any($event.target).value)"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <input
+          type="email"
+          placeholder="Email"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <input
+          type="password"
+          placeholder="Password"
+          [value]="password()"
+          (input)="password.set($any($event.target).value)"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <input
+          type="password"
+          placeholder="Confirmation Password"
+          [value]="confirmPassword()"
+          (input)="confirmPassword.set($any($event.target).value)"
+          required
+        />
+      </div>
+
+      @if (errorMessage()) {
+      <div class="error-message">{{ errorMessage() }}</div>
+      }
+      <button type="submit" class="register-btn" [disabled]="isLoading()">
+        {{ isLoading() ? "Creating Account..." : "Create Account" }}
+      </button>
+    </form>
+
+    <!-- Login Link -->
+    <div class="login-link">
+      Already have an account? <a routerLink="/login">Sign in</a>
+    </div>
+  </div>
+</div>

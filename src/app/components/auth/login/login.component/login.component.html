@@ -1,0 +1,62 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Login</h2>
+
+    <!-- Email/Password Form-->
+    <form (ngSubmit)="onEmailPasswordLogin()" class="email-form">
+      <div class="form-group">
+        <input
+          type="email"
+          placeholder="Email"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <input
+          type="password"
+          placeholder="Password"
+          [value]="password()"
+          (input)="password.set($any($event.target).value)"
+          required
+        />
+      </div>
+
+      @if (errorMessage()) {
+      <div class="error-message">{{ errorMessage() }}</div>
+      }
+
+      <button type="submit" class="login-btn" [disabled]="isLoading()">
+        {{ isLoading() ? "Signing in..." : "Sign in" }}
+      </button>
+    </form>
+
+    <!-- OAuth Divider -->
+    <div class="divider">
+      <span>— or log in with —</span>
+    </div>
+
+    <!-- OAuth Buttons (TODO) -->
+    <div class="oauth-buttons">
+      <button class="oauth-btn google" (click)="onGoogleLogin()" disabled>
+        Google
+      </button>
+      <button class="oauth-btn facebook" (click)="onFacebookLogin()" disabled>
+        Facebook
+      </button>
+      <button class="oauth-btn twitter" (click)="onTwitterLogin()" disabled>
+        Twitter
+      </button>
+      <button class="oauth-btn instagram" (click)="onInstagramLogin()" disabled>
+        Instagram
+      </button>
+    </div>
+
+    <!-- Register Link -->
+    <div class="register-link">
+      Don't have an account? <a routerLink="/register"> Sign up</a>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { UserStateService } from './user-state.service';
+import { inject, Injectable, signal } from '@angular/core';
 import { Movie } from '../interfaces/movie';
 
 interface MoviePreference {
@@ -9,8 +10,6 @@ interface MoviePreference {
 }
 
 interface UserPreferences {
-  userId?: string; // null for anonymous, user ID for logged in
-  sessionId: string; // Anonymous session tracking
   preferences: MoviePreference[];
   createdAt: Date;
   updatedAt: Date;
@@ -18,9 +17,8 @@ interface UserPreferences {
 
 @Injectable({ providedIn: 'root' })
 export class UserPreferencesService {
+  private userStateService = inject(UserStateService);
   private preferences = signal<UserPreferences>(this.initializePreferences());
-  // Future: Easy to add user login
-  private currentUserId = signal<string | null>(null);
 
   private lastAction = signal<MoviePreference | null>(null);
   private canUndo = signal<boolean>(false);
@@ -29,12 +27,11 @@ export class UserPreferencesService {
     return this.canUndo.asReadonly();
   }
 
-  private generateSessionId(): string {
-    return 'session-' + Date.now() + Math.random().toString(36).substring(2, 9);
-  }
-
   private initializePreferences(): UserPreferences {
-    const stored = localStorage.getItem('user-preferences');
+    const userIdentifier = this.userStateService.getCurrentUserIdentifier();
+    const storageKey = `user-preferences-${userIdentifier}`;
+    const stored = localStorage.getItem(storageKey);
+
     if (stored) {
       const parsed = JSON.parse(stored);
       parsed.createdAt = new Date(parsed.createdAt);
@@ -47,7 +44,6 @@ export class UserPreferencesService {
     }
 
     return {
-      sessionId: this.generateSessionId(),
       preferences: [],
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -71,7 +67,9 @@ export class UserPreferencesService {
         preferences: [...current.preferences, newPreference],
         updatedAt: new Date(),
       };
-      localStorage.setItem('user-preferences', JSON.stringify(updated));
+      const userIdentifier = this.userStateService.getCurrentUserIdentifier();
+      const storageKey = `user-preferences-${userIdentifier}`;
+      localStorage.setItem(storageKey, JSON.stringify(updated));
       return updated;
     });
     // Future: Also sync to backend
@@ -96,7 +94,9 @@ export class UserPreferencesService {
         ),
         updatedAt: new Date(),
       };
-      localStorage.setItem('user-preferences', JSON.stringify(updated));
+      const userIdentifier = this.userStateService.getCurrentUserIdentifier();
+      const storageKey = `user-preferences-${userIdentifier}`;
+      localStorage.setItem(storageKey, JSON.stringify(updated));
       return updated;
     });
 
@@ -107,11 +107,9 @@ export class UserPreferencesService {
   }
 
   clearUserPreferences() {
-    localStorage.removeItem('user-preferences');
+    const userIdentifier = this.userStateService.getCurrentUserIdentifier();
+    const storageKey = `user-preferences-${userIdentifier}`;
+    localStorage.removeItem(storageKey);
     this.preferences.set(this.initializePreferences());
   }
-
-  // Future: Migration methods
-  // migrateAnonymousToUser(userId: string) {...}
-  // syncWithBackend() {...}
 }
