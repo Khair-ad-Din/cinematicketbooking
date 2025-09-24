@@ -25,7 +25,7 @@ export class NavigationComponent {
 
   currentUserName = computed(() => {
     const user = this.authService.user();
-    return user;
+    return user?.name;
   });
 
   logout() {

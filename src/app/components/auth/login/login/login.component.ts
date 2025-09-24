@@ -29,6 +29,11 @@ export class LoginComponent {
   errorMessage = signal<string>('');
 
   onEmailPasswordLogin() {
+    console.log('Login data:', {
+      email: this.email(),
+      password: this.password(),
+    });
+
     if (!this.email() || !this.password()) {
       this.errorMessage.set('Please fill in all fields');
       return;

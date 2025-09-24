@@ -25,8 +25,9 @@ export interface EmailCredentials {
 }
 
 export interface LoginRequest {
+  email: string;
+  password: string;
   provider: AuthProvider;
-  credentials: EmailCredentials; // TODO: Will extend for Oauth later
 }
 
 export interface AuthResponse {
@@ -83,8 +84,9 @@ export class AuthService {
   // Email/Password Login
   login(email: string, password: string): Observable<AuthResponse> {
     const loginRequest: LoginRequest = {
+      email: email,
+      password: password,
       provider: 'email',
-      credentials: { email, password },
     };
     return this.http.post<AuthResponse>(`${this.API_URL}/login`, loginRequest);
   }

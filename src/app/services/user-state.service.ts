@@ -56,6 +56,10 @@ export class UserStateService {
   }
 
   private migrateToAuthenticatedUser(userId: string) {
+    const current = this.userSession();
+    if (current.isAuthenticated && current.userId === userId) {
+      return; // Already authenticated with this user, no need to update
+    }
     this.userSession.update((current) => {
       const updated = {
         ...current,
