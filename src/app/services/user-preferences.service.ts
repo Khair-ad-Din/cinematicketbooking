@@ -1,5 +1,5 @@
 import { UserStateService } from './user-state.service';
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { Movie } from '../interfaces/movie';
 
 interface MoviePreference {
@@ -22,6 +22,18 @@ export class UserPreferencesService {
 
   private lastAction = signal<MoviePreference | null>(null);
   private canUndo = signal<boolean>(false);
+
+  constructor() {
+    effect(() => {
+      const currentUserIdentifier =
+        this.userStateService.getCurrentUserIdentifier();
+      console.log(
+        'User changed, reinitializing preferences for:',
+        currentUserIdentifier
+      );
+      this.preferences.set(this.initializePreferences());
+    });
+  }
 
   get undoAvailable() {
     return this.canUndo.asReadonly();
