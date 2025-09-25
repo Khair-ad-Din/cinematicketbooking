@@ -21,7 +21,20 @@ export class MovieSwipeComponent {
   private MovieService = inject(MovieService);
   private preferencesService = inject(UserPreferencesService);
 
-  movies = this.MovieService.movies;
+  // Get IDs of movies user has already rated.
+  private ratedMovieIds = computed(() => {
+    const preferences =
+      this.preferencesService.getUserPreferences().preferences;
+    return new Set(preferences.map((pref) => pref.movieId));
+  });
+
+  availableMovies = computed(() => {
+    const allMovies = this.MovieService.movies();
+    const ratedIds = this.ratedMovieIds();
+    return allMovies.filter((movie) => !ratedIds.has(movie.id));
+  });
+
+  movies = this.availableMovies;
   loading = this.MovieService.loading;
 
   undoAvailable = this.preferencesService.undoAvailable;
