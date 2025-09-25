@@ -4,6 +4,7 @@ import {
   Component,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -22,11 +23,20 @@ export class NavigationComponent {
   private router = inject(Router);
 
   isAuthenticated = computed(() => this.authService.authenticated());
+  showDropdown = signal<boolean>(false);
 
   currentUserName = computed(() => {
     const user = this.authService.user();
     return user?.name;
   });
+
+  toggleDropdown() {
+    this.showDropdown.update((value) => !value);
+  }
+
+  closeDropdown() {
+    this.showDropdown.set(false);
+  }
 
   logout() {
     this.authService.logout();

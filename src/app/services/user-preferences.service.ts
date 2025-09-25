@@ -1,3 +1,4 @@
+import { timestamp } from 'rxjs';
 import { UserStateService } from './user-state.service';
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { Movie } from '../interfaces/movie';
@@ -90,6 +91,22 @@ export class UserPreferencesService {
   getUserPreferences() {
     return this.preferences();
     // Future: Fetch from backend API
+  }
+
+  removePreference(movieId: number, timestamp: Date) {
+    this.preferences.update((current) => {
+      const updated = {
+        ...current,
+        preferences: current.preferences.filter(
+          (pref) => pref.movieId !== movieId || pref.timestamp !== timestamp
+        ),
+        updatedAt: new Date(),
+      };
+      const userIdentifier = this.userStateService.getCurrentUserIdentifier();
+      const storageKey = `user-preferences-${userIdentifier}`;
+      localStorage.setItem(storageKey, JSON.stringify(updated));
+      return updated;
+    });
   }
 
   undoLastAction(): MoviePreference | null {

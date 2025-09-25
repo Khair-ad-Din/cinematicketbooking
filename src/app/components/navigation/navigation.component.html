@@ -2,17 +2,55 @@
   <div class="nav-links">
     <button [routerLink]="['/']" class="nav-btn">Home</button>
     <button [routerLink]="['/swipe']" class="nav-btn">Discover Movies</button>
+    <button [routerLink]="['/dashboard']" class="nav-btn">My Movies</button>
   </div>
 
   <div class="user-section">
     @if (isAuthenticated()) {
     <span class="user-greeting">Hello, {{ currentUserName() }}!</span>
-    <button [routerLink]="['/config-profile']" class="nav-btn">Config</button>
-    <button (click)="logout()" class="logout-btn">Logout</button>
+    <div class="user-dropdown">
+      <button class="gear-btn" (click)="toggleDropdown()">⚙️</button>
+      @if (showDropdown()) {
+      <div class="dropdown-menu">
+        <button
+          [routerLink]="['/config-profile']"
+          class="dropdown-item"
+          (click)="closeDropdown()"
+        >
+          Config
+        </button>
+        <button
+          (click)="logout(); closeDropdown()"
+          class="dropdown-item logout"
+        >
+          Logout
+        </button>
+      </div>
+      }
+    </div>
     } @else {
     <span class="user-greeting">Guest User</span>
-    <button [routerLink]="['/config-profile']" class="nav-btn">Config</button>
-    <button [routerLink]="['/login']" class="login-btn">Login</button>
+    <div class="user-dropdown">
+      <button class="gear-btn" (click)="toggleDropdown()">⚙️</button>
+      @if (showDropdown()) {
+      <div class="dropdown-menu">
+        <button
+          [routerLink]="['/config-profile']"
+          class="dropdown-item"
+          (click)="closeDropdown()"
+        >
+          Config
+        </button>
+        <button
+          [routerLink]="['/login']"
+          class="dropdown-item login"
+          (click)="closeDropdown()"
+        >
+          Login
+        </button>
+      </div>
+      }
+    </div>
     }
   </div>
 </nav>

@@ -1,0 +1,149 @@
+<div class="dashboard-container">
+  <h2>My Movie Dashboard</h2>
+
+  <div class="dashboard-stats">
+    <p>
+      Total movies: {{ userMoviesWithTMDB().length }} | Filtered:
+      {{ filteredMovies().length }}
+    </p>
+  </div>
+
+  <!-- Filter Controls -->
+  <div class="search-bar">
+    <div class="text-filter">
+      <input
+        type="text"
+        placeholder="Search by title/director/actor"
+        [value]="searchTerm()"
+        (input)="onSearchTermChange($event)"
+      />
+    </div>
+
+    <div class="genre-filter">
+      <div class="filter-label">Genres:</div>
+      <div class="checkbox-grid">
+        @for (genre of availableGenres(); track genre) {
+        <div class="checkbox-item">
+          <input
+            type="checkbox"
+            [value]="genre"
+            [checked]="selectedGenres().includes(genre)"
+            (change)="onGenreCheckboxChange(genre, $event)"
+          />
+          <label>{{ genre }}</label>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div class="rating-filter">
+      <label>Rating:</label>
+      <input
+        type="range"
+        min="0"
+        max="10"
+        step="1"
+        [value]="minRating()"
+        (input)="onRatingChange($event)"
+      />
+      <span>{{ minRating() }}</span>
+    </div>
+
+    <div class="status-filter">
+      <div class="filter-label">Movie Status</div>
+      <div class="checkbox-grid">
+        @for (statusOption of statusOptions; track statusOption.value) {
+        <div class="checkbox-item">
+          <input
+            type="checkbox"
+            [value]="statusOption.value"
+            [checked]="selectedStatuses().includes(statusOption.value)"
+            (change)="onStatusCheckboxChange(statusOption.value, $event)"
+          />
+          <label>{{ statusOption.label }}</label>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button (click)="clearFilters()" class="clear-filters-btn">
+        Clear All Filters
+      </button>
+      <button (click)="toggleViewMode()" class="view-toggle-btn">
+        {{ viewMode() === "grid" ? "List View" : "Grid View" }}
+      </button>
+    </div>
+  </div>
+
+  @if (viewMode() === 'grid') {
+  <div class="movie-grid">
+    @for (movie of filteredMovies(); track movie.movieId) {
+    <div class="movie-card-grid">
+      <div class="poster-container">
+        @if (movie.tmdbData?.poster_path) {
+        <img
+          [src]="movie.tmdbData?.poster_path"
+          [alt]="movie.title + ' poster'"
+          class="movie-poster-grid"
+        />
+        }
+        <h4 class="movie-title-grid">{{ movie.title }}</h4>
+        <button
+          class="remove-btn-grid"
+          (click)="removeMovie(movie)"
+          title="Remove"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+    } @empty {
+    <p>No movies in your collection yet. Start swiping to add movies!</p>
+    }
+  </div>
+  } @if (viewMode() === 'list') {
+  <div class="movie-list">
+    @for (movie of filteredMovies(); track movie.movieId) {
+    <div class="movie-card">
+      <!-- Movie Poster -->
+      @if (movie.tmdbData?.poster_path) {
+      <img
+        [src]="movie.tmdbData?.poster_path"
+        [alt]="movie.title + ' poster'"
+        class="movie-poster"
+      />
+      }
+      <div class="movie-info">
+        <h4>{{ movie.title }}</h4>
+        <!-- Movie Info -->
+        @if (movie.tmdbData) {
+        <div class="movie-metadata">
+          <div class="genres">{{ movie.tmdbData.genres?.join(", ") }}</div>
+          <div class="rating">★ {{ movie.tmdbData.vote_average }}/10</div>
+        </div>
+        <p class="overview">{{ movie.tmdbData.overview }}</p>
+        }
+        <div class="user-data">
+          <div class="movie-status">{{ movie.statusBadge }}</div>
+          <div class="movie-date">
+            Added: {{ movie.timestamp | date : "short" }}
+          </div>
+        </div>
+        <div class="movie-actions">
+          <button
+            class="remove-btn"
+            (click)="removeMovie(movie)"
+            title="Remove"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+    } @empty {
+    <p>No movies in your collection yet. Start swiping to add movies!</p>
+    }
+  </div>
+  }
+</div>
