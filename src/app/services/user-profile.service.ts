@@ -84,27 +84,20 @@ export class UserProfileService {
     this.isLoading.set(true);
     this.error.set(null);
 
-    const request = this.http
-      .put<UserProfile>(`${this.API_BASE}/me`, updates)
-      .pipe(
-        tap((profile) => {
-          if (profile) {
-            this.currentUserProfile.set(profile);
-          }
-          this.isLoading.set(false);
-        }),
-        catchError((error) => {
-          console.error('Error updating profile:', error);
-          this.error.set('Failed to update profile');
-          this.isLoading.set(false);
-          return of(null);
-        })
-      );
-
-    // Subscribe to execute the request
-    request.subscribe();
-
-    return request;
+    return this.http.put<UserProfile>(`${this.API_BASE}/me`, updates).pipe(
+      tap((profile) => {
+        if (profile) {
+          this.currentUserProfile.set(profile);
+        }
+        this.isLoading.set(false);
+      }),
+      catchError((error) => {
+        console.error('Error updating profile:', error);
+        this.error.set('Failed to update profile');
+        this.isLoading.set(false);
+        return of(null);
+      })
+    );
   }
 
   getUserProfile(userId: string): Observable<UserProfile | null> {
