@@ -20,6 +20,13 @@
           Config
         </button>
         <button
+          [routerLink]="['/friends']"
+          class="dropdown-item"
+          (click)="closeDropdown()"
+        >
+          Friends
+        </button>
+        <button
           (click)="logout(); closeDropdown()"
           class="dropdown-item logout"
         >

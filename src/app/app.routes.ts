@@ -7,6 +7,7 @@ import { ConfigProfileComponent } from './pages/config-profile/config-profile.co
 import { LoginComponent } from './components/auth/login/login/login.component';
 import { RegisterComponent } from './components/auth/login/register/register.component';
 import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
+import { FriendsComponent } from './pages/friends/friends.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -21,5 +22,6 @@ export const routes: Routes = [
   { path: 'swipe', component: MovieSwipeComponent },
   { path: 'dashboard', component: UserDashboardComponent },
   { path: 'config-profile', component: ConfigProfileComponent },
+  { path: 'friends', component: FriendsComponent },
   // Add more routes here later
 ];

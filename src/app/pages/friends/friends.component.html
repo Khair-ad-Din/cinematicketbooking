@@ -1,0 +1,135 @@
+<div class="friends-container">
+  <div class="tab-buttons">
+    <button
+      [class.active]="activeTab() === 'friends'"
+      (click)="activeTab.set('friends')"
+    >
+      Friends {{ friends().length }}
+    </button>
+    <button
+      [class.active]="activeTab() === 'requests'"
+      (click)="activeTab.set('requests')"
+    >
+      Requests {{ receivedRequests().length }}
+    </button>
+  </div>
+
+  @if (activeTab() === 'friends') {
+  <div class="friends-list">
+    @for (connection of friends(); track connection.id) {
+    <div class="friend-item">
+      <div class="friend-info">
+        <img
+          [src]="connection.friend.avatarUrl || 'assets/default-avatar.png'"
+          [alt]="connection.friend.displayName"
+        />
+        <div class="friend-details">
+          <h3>{{ connection.friend.displayName }}</h3>
+          <p>@{{ connection.friend.username }}</p>
+          @if (connection.friend.isOnline) {
+          <span class="online-status">Online</span>
+          }
+        </div>
+      </div>
+      <button class="view-profile-btn">View Profile</button>
+    </div>
+    }
+  </div>
+  } @if (activeTab() === 'requests') {
+  <section class="user-search">
+    <h3>Add Friends</h3>
+    <div class="search-input">
+      <input
+        type="text"
+        placeholder="Search users..."
+        [value]="searchQuery()"
+        (input)="searchQuery.set($event.target.value)"
+        (keyup.enter)="searchUsers()"
+      />
+      <button (click)="searchUsers()" [disabled]="isSearching()">
+        @if (isSearching()) { Searching... } @else { Search }
+      </button>
+    </div>
+
+    <div class="search-results">
+      @for (user of searchResults(); track user.id) {
+      <div class="user-item">
+        <div class="user-info">
+          <img [src]="user.avatarUrl || 'assets/default-avatar.png'" />
+          <div>
+            <h4>{{ user.displayName }}</h4>
+            <p>@{{ user.username }}</p>
+          </div>
+        </div>
+        <button (click)="sendFriendRequest(user.id)" class="add-friend-btn">
+          Add Friend
+        </button>
+      </div>
+      }
+    </div>
+  </section>
+  <div class="requests-container">
+    <section class="received-requests">
+      <h3>Received Requests</h3>
+      @for (request of receivedRequests(); track request.id) {
+      <div class="request-item">
+        <div class="user-info">
+          <img
+            [src]="request.fromUser.avatarUrl || 'assets/default-avatar.png'"
+          />
+          <div>
+            <h4>{{ request.fromUser.displayName }}</h4>
+            <p>@{{ request.fromUser.username }}</p>
+            @if (request.message) {
+            <p class="message">{{ request.message }}</p>
+            }
+          </div>
+        </div>
+        <div class="actions">
+          <button
+            class="accept-btn"
+            (click)="friendsService.acceptFriendRequest(request.id)"
+          >
+            Accept
+          </button>
+          <button
+            class="reject-btn"
+            (click)="friendsService.rejectFriendRequest(request.id)"
+          >
+            Reject
+          </button>
+        </div>
+      </div>
+      }
+    </section>
+
+    <section class="sent-requests">
+      <h3>Sent Requests</h3>
+      @for (request of sentRequests(); track request.id) {
+      <div class="request-item">
+        <div class="user-info">
+          <img
+            [src]="request.toUser.avatarUrl || 'assets/default-avatar.png'"
+          />
+          <div>
+            <h4>{{ request.toUser.displayName }}</h4>
+            <p>@{{ request.toUser.username }}</p>
+            @if (request.message) {
+            <p class="message">{{ request.message }}</p>
+            }
+          </div>
+        </div>
+        <div class="actions">
+          <button
+            class="cancel-btn"
+            (click)="friendsService.rejectFriendRequest(request.id)"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+      }
+    </section>
+  </div>
+  }
+</div>
