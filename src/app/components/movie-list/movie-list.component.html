@@ -12,11 +12,14 @@
     </div>
     <div class="genre-filter">
       @for (genre of uniqueGenres(); track $index) {
-      <input
-        type="checkbox"
-        [value]="genre"
-        (change)="onGenreCheckboxChange(genre, $event)"
-      /><label>{{ genre }}</label>
+      <label class="genre-item">
+        <input
+          type="checkbox"
+          [value]="genre"
+          (change)="onGenreCheckboxChange(genre, $event)"
+        />
+        <span>{{ genre }}</span>
+      </label>
       }
     </div>
     <div class="rating-filter">

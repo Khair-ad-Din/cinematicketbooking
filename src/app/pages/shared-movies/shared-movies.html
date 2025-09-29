@@ -1,0 +1,26 @@
+<div class="shared-movies-container">
+  <div class="header">
+    <button class="back-btn" (click)="goBack()">← Back to Profile</button>
+    @if (friendProfile()) {
+    <h2>
+      Shared Movies with
+      {{ friendProfile()?.displayName || friendProfile()?.username }}
+    </h2>
+    }
+  </div>
+
+  @if (isLoading()) {
+  <div class="loading">Loading shared movies...</div>
+  } @else {
+  <div class="content">
+    <div class="coming-soon">
+      <h3>TODO: Shared Movies Coming Soon!</h3>
+      <p>
+        This feature will show movies that both you and
+        {{ friendProfile()?.displayName || friendProfile()?.username }} have
+        interacted with.
+      </p>
+    </div>
+  </div>
+  }
+</div>

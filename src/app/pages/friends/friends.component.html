@@ -31,7 +31,21 @@
           }
         </div>
       </div>
-      <button class="view-profile-btn">View Profile</button>
+      <div class="friend-actions">
+        <button
+          class="view-profile-btn"
+          (click)="viewFriendProfile(connection.friend.id)"
+        >
+          View Profile
+        </button>
+        <button
+          class="remove-friend-btn"
+          (click)="friendsService.removeFriend(connection.friend.id)"
+          title="Remove Friend"
+        >
+          Remove
+        </button>
+      </div>
     </div>
     }
   </div>
@@ -80,9 +94,6 @@
           <div>
             <h4>{{ request.fromUser.displayName }}</h4>
             <p>@{{ request.fromUser.username }}</p>
-            @if (request.message) {
-            <p class="message">{{ request.message }}</p>
-            }
           </div>
         </div>
         <div class="actions">

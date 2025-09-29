@@ -1,13 +1,13 @@
 <nav class="navigation">
   <div class="nav-links">
     <button [routerLink]="['/']" class="nav-btn">Home</button>
-    <button [routerLink]="['/swipe']" class="nav-btn">Discover Movies</button>
+    <button [routerLink]="['/swipe']" class="nav-btn">Discover</button>
     <button [routerLink]="['/dashboard']" class="nav-btn">My Movies</button>
   </div>
 
   <div class="user-section">
     @if (isAuthenticated()) {
-    <span class="user-greeting">Hello, {{ currentUserName() }}!</span>
+    <span class="user-greeting">{{ currentUserName() }}!</span>
     <div class="user-dropdown">
       <button class="gear-btn" (click)="toggleDropdown()">⚙️</button>
       @if (showDropdown()) {

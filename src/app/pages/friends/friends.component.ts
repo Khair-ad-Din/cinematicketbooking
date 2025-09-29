@@ -9,6 +9,7 @@ import { FriendsService } from '../../services/friends.service';
 import { CommonModule } from '@angular/common';
 import { UserSummary } from '../../interfaces/social';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-friends',
@@ -21,6 +22,7 @@ export class FriendsComponent {
   activeTab = signal<'friends' | 'requests'>('friends');
   friendsService = inject(FriendsService);
   userProfileService = inject(UserProfileService);
+  router = inject(Router);
 
   friends = this.friendsService.friendsList;
   receivedRequests = this.friendsService.receivedRequests;
@@ -49,5 +51,9 @@ export class FriendsComponent {
 
   sendFriendRequest(userId: string) {
     this.friendsService.sendFriendRequest(userId);
+  }
+
+  viewFriendProfile(friendId: string) {
+    this.router.navigate(['/friend-profile', friendId]);
   }
 }
